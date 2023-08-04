@@ -18,7 +18,7 @@ contract CodexNameService is TRC721Enumerable, RecordStorage, WhiteList, Booking
 	
 	event NewURI(uint256 indexed tokenId, string tokenUri);
 		
-	mapping (uint256 => EnumerableSet.UintSet) private _subTokens;
+	mapping (uint256 => EnumerableSet.UintSet) private _subDomains;
 
 	mapping (uint256 => string) public _tokenURIs;
 	
@@ -26,6 +26,7 @@ contract CodexNameService is TRC721Enumerable, RecordStorage, WhiteList, Booking
 	
 	mapping(address => uint256) private _tokenReverses;
 
+    // Top Level Domain
     mapping(uint256 => string) private _tlds;
 	
 	string private _nftBaseURI = "";
@@ -382,7 +383,7 @@ contract CodexNameService is TRC721Enumerable, RecordStorage, WhiteList, Booking
 		
         if (count == 1) 
 		{
-            _subTokens[tokenId].add(_newTokenId);
+            _subDomains[tokenId].add(_newTokenId);
         }
 
         if (bytes(_data).length != 0) {
@@ -403,7 +404,7 @@ contract CodexNameService is TRC721Enumerable, RecordStorage, WhiteList, Booking
 		
 		uint256 _newTokenId = genTokenId(string(_newUri));
         // remove sub tokenIds itself
-        _subTokens[tokenId].remove(_newTokenId);
+        _subDomains[tokenId].remove(_newTokenId);
 		
 		if (bytes(_tokenURIs[_newTokenId]).length != 0) {
             delete _tokenURIs[_newTokenId];
@@ -413,12 +414,12 @@ contract CodexNameService is TRC721Enumerable, RecordStorage, WhiteList, Booking
     }
 	function subTokenIdCount(uint256 tokenId) public view returns (uint256) {
         require (_exists(tokenId));
-        return _subTokens[tokenId].length();
+        return _subDomains[tokenId].length();
     }
 	
 	function subTokenIdByIndex(uint256 tokenId, uint256 index) public view returns (uint256) {
         require (subTokenIdCount(tokenId) > index);
-        return _subTokens[tokenId].at(index);
+        return _subDomains[tokenId].at(index);
     }
 	/**
      * End:Subdomain

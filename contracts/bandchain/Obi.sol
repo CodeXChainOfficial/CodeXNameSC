@@ -41,7 +41,7 @@ library Obi {
         shift(data, 1)
         returns (int8 value)
     {
-        value = int8(data.raw[data.offset]);
+        value = int8(uint8(data.raw[data.offset]));
     }
 
     function decodeU16(Data memory data) internal pure returns (uint16 value) {
