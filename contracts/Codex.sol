@@ -3,14 +3,13 @@
 pragma solidity ^0.8.0;
 
 import "./token/TRC721Enumerable.sol";
-import "./access/WhiteList.sol";
-import "./access/Ownable.sol";
+import "./access/AdminControl.sol";
 import "./storage/RecordStorage.sol";
 import "./utils/SafeMath.sol";
 import "./utils/StringUtil.sol";
 import "./utils/EnumerableSet.sol";
 
-contract CodexNameService is TRC721Enumerable, RecordStorage, Ownable
+contract Codex is TRC721Enumerable, RecordStorage, AdminControl
 {
 	using SafeMath for uint256;
 	 
@@ -33,12 +32,13 @@ contract CodexNameService is TRC721Enumerable, RecordStorage, Ownable
 	
     modifier onlyApprovedOrOwner(uint256 tokenId) {
         require(
-            _isApprovedOrOwner(_msgSender(), tokenId)
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "TRC721: caller is not owner nor approved"
         );
         _;
     }
 	
-	constructor() TRC721("Codex Name Service", "CDX") {
+	constructor() TRC721("Codex", "CDX") {
 		
 	}
 	
@@ -102,7 +102,7 @@ contract CodexNameService is TRC721Enumerable, RecordStorage, Ownable
         _tokenURIs[tokenId] = _tokenURI;
     }
 
-	function registerDomain(address to, string memory domain, string memory tld) external onlyMinterController 
+	function registerDomain(address to, string memory domain, string memory tld) external onlyMinter 
 	{
 		require(to != address(0), "To address is null");
 		
@@ -166,7 +166,7 @@ contract CodexNameService is TRC721Enumerable, RecordStorage, Ownable
         _safeTransfer(from, to, tokenId, _data);
     }
 		
-	function burn(uint256 tokenId) public virtual {
+	function burn(uint256 tokenId) public virtual onlyApprovedOrOwner(tokenId) {
         require(_isApprovedOrOwner(_msgSender(), tokenId), "TRC721Burnable: caller is not owner nor approved");
 		
 		if (bytes(_tokenURIs[tokenId]).length != 0) {
@@ -193,10 +193,14 @@ contract CodexNameService is TRC721Enumerable, RecordStorage, Ownable
 	/**
      * Begin: set and get Reverses
      */
-	function reverseOf(address account) public view returns (string memory){
+	function reverseOf(address account) public view returns (uint256){
         uint256 tokenId = _tokenReverses[account];
         require(tokenId != 0, 'ReverseResolver: REVERSE_RECORD_IS_EMPTY');
-        require(_isApprovedOrOwner(account, tokenId), 'ReverseResolver: ACCOUNT_IS_NOT_APPROVED_OR_OWNER');
+        return tokenId;
+    }
+
+    function reverseOfURI(address account) public view returns (string memory){
+        uint256 tokenId = reverseOf(account);
         return _tokenURIs[tokenId];
     }
 	
@@ -210,6 +214,7 @@ contract CodexNameService is TRC721Enumerable, RecordStorage, Ownable
         address _sender = _msgSender();
         uint256 tokenId = _tokenReverses[_sender];
         require(tokenId != 0, 'ReverseResolver: REVERSE_RECORD_IS_EMPTY');
+        require(_isApprovedOrOwner(_sender, tokenId), 'ReverseResolver: SENDER_IS_NOT_APPROVED_OR_OWNER');
         delete _tokenReverses[_sender];
     }
 	/**

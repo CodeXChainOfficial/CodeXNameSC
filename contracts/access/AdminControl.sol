@@ -12,14 +12,6 @@ contract AdminControl is Ownable {
     Roles.Role private _controllerRoles;
 
 
-    modifier onlyMinterController() {
-      require (
-        hasRole(msg.sender), 
-        "AdminControl: sender must has minting role"
-      );
-      _;
-    }
-
     modifier onlyMinter() {
       require (
         hasRole(msg.sender), 
