@@ -167,8 +167,6 @@ contract Codex is TRC721Enumerable, RecordStorage, AdminControl
     }
 		
 	function burn(uint256 tokenId) public virtual onlyApprovedOrOwner(tokenId) {
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "TRC721Burnable: caller is not owner nor approved");
-		
 		if (bytes(_tokenURIs[tokenId]).length != 0) {
             delete _tokenURIs[tokenId];
         }
