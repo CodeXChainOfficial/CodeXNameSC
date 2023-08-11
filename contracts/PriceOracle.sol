@@ -41,4 +41,8 @@ abstract contract PriceOracle {
         current_price = result.rates[14];
         lastUpdateAt = res.resolveTime;
     }
+
+    function getPrice() public view returns(uint256) {
+        return current_price;
+    }
 }

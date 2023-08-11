@@ -14,14 +14,14 @@ abstract contract WhiteList is AdminControl {
         _isWhiteListActive = !_isWhiteListActive;
     }
 
-    function addWhiteLists(address[] calldata accounts, uint256 numbers) public onlyMinterController {
+    function addWhiteLists(address[] calldata accounts, uint256 numbers) public onlyOwner {
         for (uint256 i = 0; i < accounts.length; i++) 
 		{
             _whiteList[accounts[i]] = numbers;
         }
     }
 	
-	function addWhiteList(address account, uint256 numbers) public onlyMinterController {
+	function addWhiteList(address account, uint256 numbers) public onlyOwner {
         _whiteList[account] = numbers;
     }
 	

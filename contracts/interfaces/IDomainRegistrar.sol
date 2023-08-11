@@ -17,4 +17,9 @@ interface IDomainRegistrar {
      * @param tld Top level domain for domain
      */
     function registerDomain(address to, string memory domain, string memory tld) external;
+    
+    /**
+     * @dev Returns the number of tokens in ``owner``'s account.
+     */
+    function balanceOf(address owner) external view returns (uint256 balance);
 }

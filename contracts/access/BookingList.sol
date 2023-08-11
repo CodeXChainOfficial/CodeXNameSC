@@ -14,18 +14,18 @@ abstract contract BookingList is AdminControl {
         _isBookingListActive = !_isBookingListActive;
     }
 
-    function addBookingLists(string[] calldata names) public onlyMinterController {
+    function addBookingLists(string[] calldata names) public onlyOwner {
         for (uint256 i = 0; i < names.length; i++) 
 		{
             _bookingList[bytes(names[i])] = names[i];
         }
     }
 	
-	function addBookingList(string calldata name) public onlyMinterController {
+	function addBookingList(string calldata name) public onlyOwner {
         _bookingList[bytes(name)] = name;
     }
 	
-	function removeBookingList(string calldata name) public onlyMinterController {
+	function removeBookingList(string calldata name) public onlyOwner {
 		delete _bookingList[bytes(name)];
     }
 	

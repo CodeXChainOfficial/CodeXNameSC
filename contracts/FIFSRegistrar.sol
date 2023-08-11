@@ -5,11 +5,15 @@ pragma solidity ^0.8.0;
 import "./access/WhiteList.sol";
 import "./access/BookingList.sol";
 import "./utils/StringUtil.sol";
+import "./utils/SafeMath.sol";
 import "./PriceOracle.sol";
 import "./interfaces/IDomainRegistrar.sol";
+import "./interfaces/ITRC721.sol";
 
 contract FIFSRegistrar is WhiteList, BookingList
 {
+	using SafeMath for uint256;
+
     bool public _saleIsActive = false;
 	
 	uint256 public _3chartimes = 150;
@@ -31,7 +35,7 @@ contract FIFSRegistrar is WhiteList, BookingList
 	}
 
 	function getPrice() public view returns (uint256) {
-        return _price.current_price;
+        return _price.getPrice();
     }
 	
 	function setTimes(uint256[5] memory newTimes) public onlyOwner {
@@ -75,7 +79,7 @@ contract FIFSRegistrar is WhiteList, BookingList
 		if (_isWhiteListActive == true){
 			uint256 numbers = _whiteList[msg.sender];
 			require(numbers > 0, "The address is not in the Whitelist");
-			require(numbers >= balanceOf(msg.sender), "Exceeded max available to purchase");
+			require(numbers >= _codex.balanceOf(msg.sender), "Exceeded max available to purchase");
 		}
 
 		uint256 trxPerUSD = getPrice();
